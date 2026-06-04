@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>QRCBN - Book Identity</title>
+    <!-- Font Modern -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0f5c3f;
+            --primary-light: #1a8f5f;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --bg-glass: rgba(255, 255, 255, 0.95);
+            --radius: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            /* Background Unsplash + Gradient Overlay */
+            background: 
+                linear-gradient(180deg, rgba(15, 92, 63, 0.9) 0%, rgba(10, 30, 20, 0.95) 100%),
+                url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=2070&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px; /* Optimal width for mobile reading */
+            position: relative;
+        }
+
+        /* ==================== CARD STYLING ==================== */
+        .book-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero Section with Cover */
+        .hero-section {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            padding: 40px 30px 60px; /* Extra padding bottom for overlap */
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: var(--bg-glass);
+            border-radius: 50% 50% 0 0;
+        }
+
+        .cover-img {
+            width: 180px;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            object-fit: cover;
+            transition: transform 0.3s ease;
+            z-index: 2;
+        }
+
+        .cover-img:hover {
+            transform: scale(1.02);
+        }
+
+        /* Content Section */
+        .content-section {
+            padding: 0 24px 30px;
+            position: relative;
+            margin-top: -30px; /* Overlap hero */
+            z-index: 3;
+        }
+
+        .header-group {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-top: 10px;
+        }
+
+        .book-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .book-author {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .qrcbn-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(15, 92, 63, 0.1);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-top: 12px;
+        }
+
+        /* Meta Grid */
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .meta-item {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .meta-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .meta-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* Synopsis */
+        .synopsis-box {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .synopsis-text {
+            font-size: 0.9rem;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        /* Purchase Button */
+        .btn-buy {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(15, 92, 63, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .btn-buy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(15, 92, 63, 0.4);
+        }
+
+        .btn-buy i {
+            font-size: 1.1rem;
+        }
+
+        /* Details List */
+        .detail-list {
+            border-top: 1px solid rgba(0,0,0,0.05);
+            padding-top: 16px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .d-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .d-value {
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* Footer */
+        .footer-info {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.75rem;
+        }
+        
+        .btn-back {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: white;
+        }
+
+        /* Loading State */
+        .loading-container {
+            text-align: center;
+            color: white;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Error State */
+        .error-card {
+            background: rgba(254, 226, 226, 0.95);
+            color: #991b1b;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .error-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #ef4444;
+        }
+
+        /* Badge small */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .status-available { background: #dcfce7; color: #166534; }
+        .status-unavailable { background: #fee2e2; color: #991b1b; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Loading State -->
+        <div id="loading" class="loading-container">
+            <div class="spinner"></div>
+            <div style="font-weight: 600; margin-bottom: 5px;">Verifying Book Identity</div>
+            <div style="font-size: 0.85rem; opacity: 0.7;">Please wait...</div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="content" style="display: none;"></div>
+
+        <!-- Error State -->
+        <div id="error" style="display: none;"></div>
+
+        <div class="footer-info">
+            Powered by QRCBN Digital Identity
+            <br>
+            <a href="javascript:history.back()" class="btn-back"><i class="fas fa-arrow-left"></i> Go Back</a>
+        </div>
+    </div>
+    
+    <script>
+        // ==================== KONFIGURASI ====================
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwM7DS00ePBoJTtEyezGHCMq7oXiWxSAnL_n0RTZjEw7_tbarsys2KYdMhkd6PIAT_9pQ/exec';
+        const USE_LOCAL_STORAGE_FALLBACK = true;
+        
+        async function loadBook() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const qrcbnCode = urlParams.get('code');
+            
+            if (!qrcbnCode) {
+                showError('Invalid QR Code', 'No book identity code found in URL.');
+                return;
+            }
+            
+            // 1. Try Local Storage First (Fastest for demo/testing)
+            if (USE_LOCAL_STORAGE_FALLBACK) {
+                const localBook = getBookFromLocalStorage(qrcbnCode);
+                if (localBook) {
+                    console.log("Loaded from Local Storage");
+                    displayBook(localBook);
+                    return;
+                }
+            }
+            
+            // 2. Try Cloud Backend
+            try {
+                const response = await fetch(`${APPS_SCRIPT_URL}?action=getBookByQRCode&qrcbn_code=${encodeURIComponent(qrcbnCode)}`);
+                const result = await response.json();
+                
+                if (result.success && result.data.book) {
+                    displayBook(result.data.book);
+                    trackView(qrcbnCode);
+                } else {
+                    showError('Book Not Found', 'This QR code is not registered in our database.');
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                showError('Connection Error', 'Failed to connect to the database. Please check your internet connection.');
+            }
+        }
+        
+        function getBookFromLocalStorage(qrcbnCode) {
+            try {
+                const books = localStorage.getItem('qrcbn_books');
+                if (books) {
+                    const bookList = JSON.parse(books);
+                    return bookList.find(b => b.qrcbn_code === qrcbnCode);
+                }
+            } catch(e) {
+                console.log('LocalStorage fallback failed:', e);
+            }
+            return null;
+        }
+        
+        function displayBook(book) {
+            document.getElementById('loading').style.display = 'none';
+            const container = document.getElementById('content');
+            container.style.display = 'block';
+            
+            // Default cover if none
+            const coverSrc = book.cover_url && book.cover_url !== '' 
+                ? escapeHtml(book.cover_url) 
+                : 'https://placehold.co/200x300/f8fafc/64748b?text=No+Cover';
+            
+            const priceFormatted = book.price ? `Rp ${parseInt(book.price).toLocaleString('id-ID')}` : 'Price N/A';
+            const isAvailable = book.in_marketplace === true || book.in_marketplace === 'true';
+            
+            container.innerHTML = `
+                <div class="book-card">
+                    <!-- Hero / Cover -->
+                    <div class="hero-section">
+                        <img src="${coverSrc}" class="cover-img" alt="Cover ${escapeHtml(book.title)}" onerror="this.src='https://placehold.co/200x300/f8fafc/64748b?text=Error'">
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="content-section">
+                        <div class="header-group">
+                            <h1 class="book-title">${escapeHtml(book.title || 'Untitled')}</h1>
+                            <div class="book-author">${escapeHtml(book.authors || 'Unknown Author')}</div>
+                            <div class="qrcbn-badge">
+                                <i class="fas fa-fingerprint"></i> QRCBN: ${escapeHtml(book.qrcbn_code || 'N/A')}
+                            </div>
+                        </div>
+                        
+                        <!-- Meta Grid -->
+                        <div class="meta-grid">
+                            <div class="meta-item">
+                                <div class="meta-label">Category</div>
+                                <div class="meta-value">${escapeHtml(book.category || '-')}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Pages</div>
+                                <div class="meta-value">${book.page_count || '-'} pgs</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Edition</div>
+                                <div class="meta-value">${escapeHtml(book.edition || '-')}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Medium</div>
+                                <div class="meta-value">${escapeHtml(book.medium || '-')}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Synopsis -->
+                        <div class="synopsis-box">
+                            <div style="font-weight: 700; font-size: 0.8rem; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-book-open"></i> Synopsis
+                            </div>
+                            <p class="synopsis-text">${escapeHtml(book.synopsis || 'No synopsis available.')}</p>
+                        </div>
+                        
+                        <!-- CTA Button -->
+                        ${book.sales_links ? `
+                        <a href="${escapeHtml(book.sales_links)}" target="_blank" class="btn-buy">
+                            <i class="fas fa-shopping-cart"></i> Purchase for ${priceFormatted}
+                        </a>
+                        ` : `
+                        <div class="btn-buy" style="background: #94a3b8; cursor: not-allowed; box-shadow: none;">
+                            <i class="fas fa-times-circle"></i> Purchase Link Unavailable
+                        </div>
+                        `}
+                        
+                        <!-- Details List -->
+                        <div class="detail-list">
+                            <div class="detail-row">
+                                <span class="d-label"><i class="fas fa-user-edit" style="width:20px; opacity:0.5"></i> Editor</span>
+                                <span class="d-value">${escapeHtml(book.editors || '-')}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="d-label"><i class="fas fa-paint-brush" style="width:20px; opacity:0.5"></i> Cover Design</span>
+                                <span class="d-value">${escapeHtml(book.cover_designer || '-')}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="d-label"><i class="fas fa-child" style="width:20px; opacity:0.5"></i> Age Group</span>
+                                <span class="d-value">${escapeHtml(book.age_group || '-')}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="d-label"><i class="fas fa-check-circle" style="width:20px; opacity:0.5"></i> Status</span>
+                                <span class="d-value">
+                                    <span class="status-badge ${isAvailable ? 'status-available' : 'status-unavailable'}">
+                                        ${isAvailable ? 'Available' : 'Not in Market'}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        ${book.views ? `
+                        <div style="margin-top: 20px; text-align: center; font-size: 0.75rem; color: var(--text-muted);">
+                            <i class="fas fa-eye"></i> Viewed ${book.views} times
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        async function trackView(qrcbnCode) {
+            try {
+                await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'incrementView', qrcbn_code: qrcbnCode })
+                });
+            } catch(e) { 
+                console.log('View tracking skipped'); 
+            }
+        }
+        
+        function showError(title, message) {
+            document.getElementById('loading').style.display = 'none';
+            const errorDiv = document.getElementById('error');
+            errorDiv.style.display = 'block';
+            errorDiv.innerHTML = `
+                <div class="error-card book-card">
+                    <div class="error-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h2 style="margin-bottom: 10px; font-size: 1.2rem;">${title}</h2>
+                    <p style="font-size: 0.9rem; margin-bottom: 20px; opacity: 0.8;">${message}</p>
+                    <button onclick="location.reload()" style="background: #ef4444; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                        Try Again
+                    </button>
+                </div>
+            `;
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;')
+                .replace(/\n/g, '<br>');
+        }
+        
+        // Initialize
+        loadBook();
+    </script>
+</body>
+</html>

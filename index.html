@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRCBN Publisher Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* [YOUR EXISTING CSS - SAME AS BEFORE] */
+        :root {
+            --primary: #0f5c3f;
+            --primary-light: #1a8f5f;
+            --primary-dark: #083d2a;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-white: rgba(255, 255, 255, 0.95);
+            --bg-glass: rgba(255, 255, 255, 0.75);
+            --border-color: rgba(255, 255, 255, 0.5);
+            --accent-gold: #D4AF37;
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: 
+                linear-gradient(135deg, rgba(15, 92, 63, 0.85) 0%, rgba(26, 143, 95, 0.75) 100%),
+                url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?q=80&w=2029&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: var(--bg-white);
+            backdrop-filter: blur(20px);
+            box-shadow: 5px 0 30px rgba(0, 0, 0, 0.1);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            border-right: 1px solid var(--border-color);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 20px rgba(15, 92, 63, 0.3);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        .logo-subtext {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .nav-menu {
+            flex: 1;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            padding-left: 12px;
+            font-weight: 700;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            margin: 6px 0;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.95rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .nav-item:hover {
+            background: rgba(15, 92, 63, 0.08);
+            color: var(--primary);
+            padding-left: 20px;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(15, 92, 63, 0.1), rgba(26, 143, 95, 0.05));
+            color: var(--primary);
+        }
+
+        .nav-item.active::before {
+            transform: scaleY(1);
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .user-card {
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+            border-radius: 16px;
+            padding: 1.2rem;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: var(--shadow-card);
+        }
+
+        .user-name {
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .user-email {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: #f1f5f9;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.online {
+            background: rgba(34, 197, 94, 0.15);
+            color: #16a34a;
+        }
+
+        .status-badge.offline {
+            background: rgba(100, 116, 139, 0.15);
+            color: #64748b;
+        }
+
+        .signout-btn {
+            width: 100%;
+            background: none;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .signout-btn:hover {
+            background: #ef4444;
+            color: white;
+            border-color: transparent;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 300px;
+            padding: 2.5rem;
+            transition: margin-left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .page-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .greeting {
+            color: white;
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .sub-greeting {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-white);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .stat-card:hover::after {
+            opacity: 1;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            background: rgba(15, 92, 63, 0.1);
+            color: var(--primary);
+        }
+
+        .stat-title {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .stat-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .section {
+            background: var(--bg-white);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .book-table {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px 16px;
+            background: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid rgba(0,0,0,0.05);
+        }
+
+        td {
+            padding: 14px 16px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: rgba(15, 92, 63, 0.03);
+        }
+
+        .table-title {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .table-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            box-shadow: 0 4px 15px rgba(15, 92, 63, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(15, 92, 63, 0.4);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid rgba(0,0,0,0.1);
+            color: var(--text-muted);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(0,0,0,0.03);
+            color: var(--text-main);
+            border-color: rgba(0,0,0,0.2);
+        }
+
+        .btn-danger-ghost {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .btn-danger-ghost:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.9rem;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            background: #f8fafc;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(15, 92, 63, 0.1);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .checkbox-label input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            max-width: 480px;
+            width: 100%;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .qr-container {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .qr-container img {
+            border-radius: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .recent-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s;
+        }
+
+        .recent-item:hover {
+            background: white;
+            box-shadow: var(--shadow-card);
+        }
+
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            z-index: 200;
+            background: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-soft);
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: none;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+                box-shadow: 10px 0 40px rgba(0,0,0,0.2);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1.5rem;
+                padding-top: 6rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fas fa-book-quran"></i>
+                </div>
+                <div class="logo-text">QRCBN</div>
+                <div class="logo-subtext">Publisher Portal</div>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-label">Main Menu</div>
+                <div class="nav-item active" data-page="dashboard" onclick="showPage('dashboard')">
+                    <i class="fas fa-chart-pie"></i> Dashboard
+                </div>
+                <div class="nav-item" data-page="library" onclick="showPage('library')">
+                    <i class="fas fa-books"></i> Library
+                </div>
+                <div class="nav-item" data-page="publish" onclick="showPage('publish')">
+                    <i class="fas fa-cloud-arrow-up"></i> Publish Book
+                </div>
+                
+                <div class="nav-label" style="margin-top: 1.5rem;">Settings</div>
+                <div class="nav-item" data-page="profile" onclick="showPage('profile')">
+                    <i class="fas fa-user-pen"></i> Profile
+                </div>
+            </div>
+            
+            <div class="user-card">
+                <div class="user-name" id="publisherName">JP Creative</div>
+                <div class="user-email" id="publisherEmail">jpcreative.bekasi@gmail.com</div>
+                
+                <div id="syncStatus" class="status-badge offline">
+                    <i class="fas fa-circle" style="font-size: 8px;"></i> Checking...
+                </div>
+                
+                <button class="signout-btn" onclick="signOut()">
+                    <i class="fas fa-right-from-bracket"></i> Sign Out
+                </button>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboardPage">
+                <div class="page-header">
+                    <h1 class="greeting">Good Night, <span id="greetingName">Publisher</span></h1>
+                    <p class="sub-greeting">Here is the latest update on your manuscripts.</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card" onclick="showPage('library')">
+                        <div class="stat-icon"><i class="fas fa-book"></i></div>
+                        <div class="stat-title">Total Manuscripts</div>
+                        <div class="stat-value" id="statPublished">0</div>
+                        <div class="stat-desc">Books registered with QRCBN</div>
+                    </div>
+                    <div class="stat-card" onclick="showPage('library')">
+                        <div class="stat-icon"><i class="fas fa-store"></i></div>
+                        <div class="stat-title">In Marketplace</div>
+                        <div class="stat-value" id="statInMarket">0</div>
+                        <div class="stat-desc">Visible to public</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+                        <div class="stat-title">Balance</div>
+                        <div class="stat-value">Rp 0</div>
+                        <div class="stat-desc">Available funds</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-arrow-trend-up"></i></div>
+                        <div class="stat-title">Withdrawn</div>
+                        <div class="stat-value">Rp 0</div>
+                        <div class="stat-desc">Total withdrawn</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <i class="fas fa-clock-rotate-left"></i> Recent Activity
+                        </div>
+                        <button class="btn btn-primary" onclick="showPage('publish')">
+                            <i class="fas fa-plus"></i> Publish New
+                        </button>
+                    </div>
+                    <div id="recentBooksList"></div>
+                </div>
+            </div>
+            
+            <!-- Library Page -->
+            <div id="libraryPage" style="display: none;">
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <i class="fas fa-books"></i> My Library
+                        </div>
+                        <button class="btn btn-primary" onclick="showPage('publish')">
+                            <i class="fas fa-plus"></i> Add New
+                        </button>
+                    </div>
+                    <div class="book-table">
+                        <table id="booksTable">
+                            <thead>
+                                <tr><th>Manuscript Title</th><th>Author(s)</th><th>Publish Date</th><th>Market Status</th><th style="text-align: right;">Actions</th></tr>
+                            </thead>
+                            <tbody id="booksTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Publish Page -->
+            <div id="publishPage" style="display: none;">
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <i class="fas fa-pen-nib"></i> Register New Manuscript
+                        </div>
+                    </div>
+                    
+                    <form id="bookForm" onsubmit="saveBook(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Title *</label>
+                                <input type="text" id="title" class="form-input" placeholder="Book Title" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Authors *</label>
+                                <input type="text" id="authors" class="form-input" placeholder="Main Author Name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Editors</label>
+                                <input type="text" id="editors" class="form-input" placeholder="Editor Names">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Cover Designer</label>
+                                <input type="text" id="cover_designer" class="form-input" placeholder="Designer Name">
+                            </div>
+
+                            <!-- ✅ ADDED: Layout By field -->
+                            <div class="form-group">
+                                <label class="form-label">Layout By</label>
+                                <input type="text" id="layout_by" class="form-input" placeholder="Layout Designer Name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Page Count</label>
+                                <input type="number" id="page_count" class="form-input" placeholder="e.g. 200">
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label">Synopsis *</label>
+                                <textarea id="synopsis" class="form-textarea" rows="4" placeholder="Brief description of the book..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Cover URL</label>
+                                <input type="url" id="cover_url" class="form-input" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Edition</label>
+                                <select id="edition" class="form-select">
+                                    <option>First Edition</option>
+                                    <option>Second Edition</option>
+                                    <option>Third Edition</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Reader Age Group</label>
+                                <select id="age_group" class="form-select">
+                                    <option>Children</option>
+                                    <option>Adult</option>
+                                    <option selected>All Ages</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Category</label>
+                                <select id="category" class="form-select">
+                                    <option>Fiction</option>
+                                    <option>Non Fiction</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Medium</label>
+                                <select id="medium" class="form-select">
+                                    <option>Printed Book</option>
+                                    <option>Digital Book</option>
+                                    <option selected>Digital and Printed Book</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Price (Rp)</label>
+                                <input type="number" id="price" class="form-input" value="85000">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Sales Links</label>
+                                <input type="text" id="sales_links" class="form-input" placeholder="Shopee/Tokopedia URL">
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="in_marketplace">
+                                    <span>Submit to QRCBN Market (Public Visibility)</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1.5rem;">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-qrcode"></i> Register & Generate QR
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Profile Page -->
+            <div id="profilePage" style="display: none;">
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <i class="fas fa-building"></i> Publisher Profile
+                        </div>
+                    </div>
+                    
+                    <form id="profileForm" onsubmit="updateProfile(event)">
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label class="form-label">Publisher Name</label>
+                                <input type="text" id="profile_publisher_name" class="form-input">
+                            </div>
+                            <div class="form-group full-width">
+                                <label class="form-label">Address</label>
+                                <textarea id="profile_address" class="form-textarea" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Person Responsible</label>
+                                <input type="text" id="profile_person_responsible" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" id="profile_phone" class="form-input">
+                            </div>
+                            <div class="form-group full-width">
+                                <label class="form-label">Email</label>
+                                <input type="email" id="profile_email" class="form-input">
+                            </div>
+                        </div>
+                        <div style="margin-top: 1.5rem;">
+                            <button type="submit" class="btn btn-primary">Update Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal QR -->
+    <div id="qrModal" class="modal-overlay" onclick="if(event.target===this) closeQRModal()">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 0.5rem; color: var(--primary);">Book Registered</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Scan the QR code to view details</p>
+            
+            <div class="qr-container" id="qrPreview"></div>
+            
+            <div style="background: #f1f5f9; padding: 10px; border-radius: 8px; margin-bottom: 1.5rem;">
+                <small style="color: var(--text-muted); display: block; margin-bottom: 4px;">QRCBN Code</small>
+                <strong id="qrCodeValue" style="font-size: 1.2rem; letter-spacing: 1px; color: var(--text-main);"></strong>
+            </div>
+            
+            <button class="btn btn-primary" onclick="closeQRModal()" style="width: 100%;">
+                Done
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ==================== KONFIGURASI ====================
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwM7DS00ePBoJTtEyezGHCMq7oXiWxSAnL_n0RTZjEw7_tbarsys2KYdMhkd6PIAT_9pQ/exec';
+        
+        // ==================== DATA STORAGE (localStorage) ====================
+        function getBooks() {
+            const books = localStorage.getItem('qrcbn_books');
+            return books ? JSON.parse(books) : [];
+        }
+        
+        function saveBooks(books) {
+            localStorage.setItem('qrcbn_books', JSON.stringify(books));
+        }
+        
+        function getPublisher() {
+            const publisher = localStorage.getItem('qrcbn_publisher');
+            if (publisher) return JSON.parse(publisher);
+            return {
+                publisher_name: "Self Publishing. JP Creative",
+                address: "Alamanda Regency, Jl. Kenanga 3. Blok K10/No 20",
+                person_responsible: "Erwan Teguh Santoso",
+                phone: "082112038795",
+                email: "jpcreative.bekasi@gmail.com"
+            };
+        }
+        
+        function savePublisher(publisher) {
+            localStorage.setItem('qrcbn_publisher', JSON.stringify(publisher));
+        }
+        
+        function generateQRCBNCode() {
+            const timestamp = Date.now().toString().slice(-6);
+            const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            return `62-${timestamp.slice(0,3)}-${timestamp.slice(3)}-${random}`;
+        }
+        
+        // ==================== SYNC TO GOOGLE SHEETS ====================
+        let isOnline = false;
+        
+        async function checkConnection() {
+            const statusDiv = document.getElementById('syncStatus');
+            
+            // Check if URL is valid
+            if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE' || APPS_SCRIPT_URL.includes('YOUR_APPS')) {
+                isOnline = false;
+                statusDiv.className = 'status-badge offline';
+                statusDiv.innerHTML = '<i class="fas fa-circle" style="font-size: 8px;"></i> ⚠️ Set URL First';
+                return;
+            }
+            
+            try {
+                // Try to ping the Apps Script
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
+                const response = await fetch(`${APPS_SCRIPT_URL}?action=getDashboardStats`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (response.ok) {
+                    isOnline = true;
+                    statusDiv.className = 'status-badge online';
+                    statusDiv.innerHTML = '<i class="fas fa-circle" style="font-size: 8px;"></i> Online & Synced';
+                } else {
+                    throw new Error('Response not OK');
+                }
+            } catch (error) {
+                console.log('Connection check failed:', error.message);
+                isOnline = false;
+                statusDiv.className = 'status-badge offline';
+                statusDiv.innerHTML = '<i class="fas fa-circle" style="font-size: 8px;"></i> Offline Mode';
+            }
+        }
+        
+        async function syncBookToCloud(book) {
+            if (!isOnline) {
+                console.log('Offline mode - book saved locally only');
+                return false;
+            }
+            
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'addBook', ...book })
+                });
+                
+                if (response.ok) {
+                    console.log('Book synced to cloud');
+                    return true;
+                } else {
+                    throw new Error('Sync failed');
+                }
+            } catch (error) {
+                console.log('Sync failed:', error);
+                isOnline = false;
+                document.getElementById('syncStatus').className = 'status-badge offline';
+                document.getElementById('syncStatus').innerHTML = '<i class="fas fa-circle" style="font-size: 8px;"></i> Offline Mode';
+                return false;
+            }
+        }
+        
+        async function syncDeleteToCloud(qrcbnCode) {
+            if (!isOnline) return;
+            try {
+                await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'deleteBook', qrcbn_code: qrcbnCode })
+                });
+                console.log('Delete synced to cloud');
+            } catch (error) {
+                console.log('Delete sync failed');
+            }
+        }
+        
+        // ==================== UI RENDERING ====================
+        
+        function refreshDashboard() {
+            const books = getBooks();
+            const published = books.length;
+            const inMarket = books.filter(b => b.in_marketplace === true || b.in_marketplace === 'true').length;
+            
+            document.getElementById('statPublished').innerText = published;
+            document.getElementById('statInMarket').innerText = inMarket;
+            
+            const recent = books.slice(-5).reverse();
+            const container = document.getElementById('recentBooksList');
+            
+            if (recent.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No Books Yet</h3>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Start by publishing your first manuscript.</p>
+                    </div>`;
+                return;
+            }
+            
+            container.innerHTML = recent.map(book => `
+                <div class="recent-item">
+                    <div>
+                        <div style="font-weight: 700; color: var(--text-main);">${escapeHtml(book.title || 'Untitled')}</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
+                            QR: ${book.qrcbn_code || 'N/A'}
+                        </div>
+                    </div>
+                    <button class="btn btn-ghost" onclick="viewQR('${book.qrcbn_code}')">
+                        View <i class="fas fa-chevron-right" style="margin-left:5px; font-size: 0.8rem;"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+        
+        function refreshLibrary() {
+            const books = getBooks();
+            const tbody = document.getElementById('booksTableBody');
+            
+            if (books.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="padding: 2rem;"><div class="empty-state" style="padding: 1rem;">Library is empty.</div></td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = books.map(book => `
+                <tr>
+                    <td>
+                        <div class="table-title">${escapeHtml(book.title || 'Untitled')}</div>
+                        <div class="table-meta">${book.category || 'General'} • ${book.medium || 'N/A'}</div>
+                    </div>
+                    <td>${escapeHtml(book.authors || 'Unknown')}</div>
+                    <td>${book.publish_date ? new Date(book.publish_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}</div>
+                    <td>
+                        <span style="padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background: ${book.in_marketplace ? 'rgba(34,197,94,0.1)' : '#f1f5f9'}; color: ${book.in_marketplace ? '#16a34a' : '#64748b'};">
+                            ${book.in_marketplace ? 'Active' : 'Draft'}
+                        </span>
+                    </div>
+                    <td style="text-align: right; white-space: nowrap;">
+                        <button class="btn btn-ghost" onclick="viewQR('${book.qrcbn_code}')" style="padding: 8px 12px;">
+                            <i class="fas fa-qrcode"></i>
+                        </button>
+                        <button class="btn btn-danger-ghost" onclick="deleteBook('${book.qrcbn_code}')" style="padding: 8px 12px; margin-left: 5px;">
+                            <i class="fas fa-trash-can"></i>
+                        </button>
+                    </div>
+                </table>
+            `).join('');
+        }
+        
+        function refreshProfile() {
+            const publisher = getPublisher();
+            document.getElementById('profile_publisher_name').value = publisher.publisher_name || '';
+            document.getElementById('profile_address').value = publisher.address || '';
+            document.getElementById('profile_person_responsible').value = publisher.person_responsible || '';
+            document.getElementById('profile_phone').value = publisher.phone || '';
+            document.getElementById('profile_email').value = publisher.email || '';
+            
+            document.getElementById('publisherName').innerText = publisher.publisher_name || 'Publisher';
+            document.getElementById('publisherEmail').innerText = publisher.email || 'No email';
+            document.getElementById('greetingName').innerText = (publisher.publisher_name || 'Publisher').split(' ')[0];
+        }
+        
+        // ==================== CRUD ====================
+        async function saveBook(event) {
+            event.preventDefault();
+            
+            const newBook = {
+                id: Date.now().toString(),
+                qrcbn_code: generateQRCBNCode(),
+                title: document.getElementById('title').value,
+                authors: document.getElementById('authors').value,
+                editors: document.getElementById('editors').value,
+                cover_designer: document.getElementById('cover_designer').value,
+                layout_by: document.getElementById('layout_by').value,  // ✅ Now exists
+                synopsis: document.getElementById('synopsis').value,
+                cover_url: document.getElementById('cover_url').value,
+                page_count: document.getElementById('page_count').value,
+                edition: document.getElementById('edition').value,
+                age_group: document.getElementById('age_group').value,
+                category: document.getElementById('category').value,
+                medium: document.getElementById('medium').value,
+                price: document.getElementById('price').value,
+                sales_links: document.getElementById('sales_links').value,
+                in_marketplace: document.getElementById('in_marketplace').checked,
+                publish_date: new Date().toISOString(),
+                views: 0
+            };
+            
+            const books = getBooks();
+            books.push(newBook);
+            saveBooks(books);
+            
+            // Try sync, but don't wait
+            syncBookToCloud(newBook).catch(console.log);
+            
+            document.getElementById('bookForm').reset();
+            document.getElementById('price').value = '85000';
+            
+            refreshDashboard();
+            refreshLibrary();
+            
+            viewQR(newBook.qrcbn_code);
+            showPage('library');
+        }
+        
+        async function deleteBook(qrcbnCode) {
+            if (confirm('Are you sure you want to delete this manuscript?')) {
+                let books = getBooks();
+                books = books.filter(b => b.qrcbn_code !== qrcbnCode);
+                saveBooks(books);
+                await syncDeleteToCloud(qrcbnCode);
+                refreshDashboard();
+                refreshLibrary();
+            }
+        }
+        
+        function updateProfile(event) {
+            event.preventDefault();
+            const publisher = {
+                publisher_name: document.getElementById('profile_publisher_name').value,
+                address: document.getElementById('profile_address').value,
+                person_responsible: document.getElementById('profile_person_responsible').value,
+                phone: document.getElementById('profile_phone').value,
+                email: document.getElementById('profile_email').value
+            };
+            savePublisher(publisher);
+            refreshProfile();
+            alert('Profile updated successfully');
+        }
+        
+        // ==================== QR ====================
+        function viewQR(qrcbnCode) {
+            const scanUrl = `scan.html?code=${qrcbnCode}`;
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(scanUrl)}&bgcolor=ffffff`;
+            
+            document.getElementById('qrPreview').innerHTML = `<img src="${qrApiUrl}" alt="QR Code" style="width: 180px; height: 180px;">`;
+            document.getElementById('qrCodeValue').innerText = qrcbnCode;
+            document.getElementById('qrModal').style.display = 'flex';
+        }
+        
+        function closeQRModal() {
+            document.getElementById('qrModal').style.display = 'none';
+        }
+        
+        // ==================== NAVIGATION ====================
+        function showPage(page) {
+            document.getElementById('dashboardPage').style.display = 'none';
+            document.getElementById('libraryPage').style.display = 'none';
+            document.getElementById('publishPage').style.display = 'none';
+            document.getElementById('profilePage').style.display = 'none';
+            
+            document.getElementById(page + 'Page').style.display = 'block';
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.page === page) item.classList.add('active');
+            });
+            
+            if (page === 'library') refreshLibrary();
+            if (page === 'profile') refreshProfile();
+            if (page === 'dashboard') refreshDashboard();
+            
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        }
+        
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+        
+        function signOut() {
+            if (confirm('Sign out? Data will remain saved on this device.')) {
+                location.reload();
+            }
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+        
+        // ==================== INIT ====================
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (getBooks().length === 0) {
+                const sampleBook = {
+                    id: 'sample1',
+                    qrcbn_code: '62-184-7889-271',
+                    title: 'Perjalanan Menuju Allah',
+                    authors: 'Muhammad Rifki',
+                    editors: 'Amy Rahmadiania, S.Pd.',
+                    cover_designer: 'Amy Rahmadiania, S.Pd.',
+                    layout_by: 'JP Creative',
+                    synopsis: 'Buku ini mengisahkan perjalanan spiritual seorang hamba dalam mencari ridha Allah SWT.',
+                    cover_url: '',
+                    page_count: '220',
+                    edition: 'First Edition',
+                    age_group: 'All Ages',
+                    category: 'Non Fiction',
+                    medium: 'Digital and Printed Book',
+                    price: '85000',
+                    sales_links: 'https://tokopedia.com/example',
+                    in_marketplace: true,
+                    publish_date: new Date().toISOString(),
+                    views: 0
+                };
+                saveBooks([sampleBook]);
+            }
+            
+            await checkConnection();
+            refreshDashboard();
+            refreshProfile();
+            showPage('dashboard');
+        });
+        
+        window.showPage = showPage;
+        window.saveBook = saveBook;
+        window.updateProfile = updateProfile;
+        window.deleteBook = deleteBook;
+        window.viewQR = viewQR;
+        window.closeQRModal = closeQRModal;
+        window.toggleSidebar = toggleSidebar;
+        window.signOut = signOut;
+    </script>
+</body>
+</html>
