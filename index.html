@@ -1087,38 +1087,31 @@
         }
         
         function refreshLibrary() {
-            const books = getBooks();
-            const tbody = document.getElementById('booksTableBody');
-            
-            if (books.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="padding: 2rem;"><div class="empty-state" style="padding: 1rem;">Library is empty.</div></td></tr>`;
-                return;
-            }
-            
-            tbody.innerHTML = books.map(book => `
-                <tr>
-                    <td>
-                        <div class="table-title">${escapeHtml(book.title || 'Untitled')}</div>
-                        <div class="table-meta">${book.category || 'General'} • ${book.medium || 'N/A'}</div>
-                    </div>
-                    <td>${escapeHtml(book.authors || 'Unknown')}</div>
-                    <td>${book.publish_date ? new Date(book.publish_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}</div>
-                    <td>
-                        <span style="padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background: ${book.in_marketplace ? 'rgba(34,197,94,0.1)' : '#f1f5f9'}; color: ${book.in_marketplace ? '#16a34a' : '#64748b'};">
-                            ${book.in_marketplace ? 'Active' : 'Draft'}
-                        </span>
-                    </div>
-                    <td style="text-align: right; white-space: nowrap;">
-                        <button class="btn btn-ghost" onclick="viewQR('${book.qrcbn_code}')" style="padding: 8px 12px;">
-                            <i class="fas fa-qrcode"></i>
-                        </button>
-                        <button class="btn btn-danger-ghost" onclick="deleteBook('${book.qrcbn_code}')" style="padding: 8px 12px; margin-left: 5px;">
-                            <i class="fas fa-trash-can"></i>
-                        </button>
-                    </div>
-                </table>
-            `).join('');
-        }
+    const books = getBooks();
+    const tbody = document.getElementById('booksTableBody');
+    
+    if (books.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No books published yet. Click "+ Add New" to get started!</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = books.map(book => `
+        <tr>
+            <td>
+                <strong>${escapeHtml(book.title || 'Untitled')}</strong><br>
+                <small style="color:#64748b">QR: ${book.qrcbn_code || ''}</small>
+            </td>
+            <td>${escapeHtml(book.authors || 'Unknown')}</td>
+            <td>${book.publish_date ? new Date(book.publish_date).toLocaleDateString('id-ID') : '-'}</td>
+            <td>${book.in_marketplace ? '✅ Yes' : '❌ No'}</td>
+            <td style="white-space: nowrap;">
+                <button class="btn-secondary" onclick="viewQR('${book.qrcbn_code}')" style="margin-right:8px">🔍 QR</button>
+                <button class="btn-secondary" onclick="editBook('${book.qrcbn_code}')" style="margin-right:8px; background:rgba(15, 92, 63, 0.1);">✏️ Edit</button>
+                <button class="btn-danger" onclick="deleteBook('${book.qrcbn_code}')">🗑️ Delete</button>
+            </td>
+        </tr>
+    `).join('');
+}
         
         function refreshProfile() {
             const publisher = getPublisher();
@@ -1186,6 +1179,135 @@
                 refreshLibrary();
             }
         }
+		
+		// ==================== EDIT BOOK FUNCTION ====================
+function editBook(qrcbnCode) {
+    const books = getBooks();
+    const book = books.find(b => b.qrcbn_code === qrcbnCode);
+    
+    if (!book) {
+        alert('Book not found!');
+        return;
+    }
+    
+    // Isi form di halaman Publish dengan data buku yang akan diedit
+    document.getElementById('title').value = book.title || '';
+    document.getElementById('authors').value = book.authors || '';
+    document.getElementById('editors').value = book.editors || '';
+    document.getElementById('cover_designer').value = book.cover_designer || '';
+    document.getElementById('layout_by').value = book.layout_by || '';
+    document.getElementById('synopsis').value = book.synopsis || '';
+    document.getElementById('cover_url').value = book.cover_url || '';
+    document.getElementById('page_count').value = book.page_count || '';
+    document.getElementById('edition').value = book.edition || 'First Edition';
+    document.getElementById('age_group').value = book.age_group || 'All Ages';
+    document.getElementById('category').value = book.category || 'Fiction';
+    document.getElementById('medium').value = book.medium || 'Digital and Printed Book';
+    document.getElementById('price').value = book.price || 85000;
+    document.getElementById('sales_links').value = book.sales_links || '';
+    document.getElementById('in_marketplace').checked = book.in_marketplace === true || book.in_marketplace === 'true';
+    
+    // Simpan QR code sementara untuk update nanti
+    window.editingQRCBN = qrcbnCode;
+    
+    // Ubah tombol submit jadi "Update Book"
+    const submitBtn = document.querySelector('#bookForm button[type="submit"]');
+    submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Book';
+    submitBtn.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+    
+    // Tambahkan event temporary untuk update
+    const originalOnSubmit = window.saveBook;
+    window.saveBook = async function(event) {
+        event.preventDefault();
+        await updateBook(event);
+    };
+    
+    // Ganti form onsubmit sementara
+    const form = document.getElementById('bookForm');
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        await updateBook(e);
+    };
+    
+    // Pindah ke halaman publish
+    showPage('publish');
+    
+    // Scroll ke atas
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ==================== UPDATE BOOK FUNCTION ====================
+async function updateBook(event) {
+    event.preventDefault();
+    
+    if (!window.editingQRCBN) {
+        // Jika tidak ada buku yang sedang diedit, jalankan save biasa
+        return saveBook(event);
+    }
+    
+    const updatedBook = {
+        qrcbn_code: window.editingQRCBN,
+        title: document.getElementById('title').value,
+        authors: document.getElementById('authors').value,
+        editors: document.getElementById('editors').value,
+        cover_designer: document.getElementById('cover_designer').value,
+        layout_by: document.getElementById('layout_by').value,
+        synopsis: document.getElementById('synopsis').value,
+        cover_url: document.getElementById('cover_url').value,
+        page_count: document.getElementById('page_count').value,
+        edition: document.getElementById('edition').value,
+        age_group: document.getElementById('age_group').value,
+        category: document.getElementById('category').value,
+        medium: document.getElementById('medium').value,
+        price: document.getElementById('price').value,
+        sales_links: document.getElementById('sales_links').value,
+        in_marketplace: document.getElementById('in_marketplace').checked
+    };
+    
+    // Ambil daftar buku, update yang sesuai
+    let books = getBooks();
+    const index = books.findIndex(b => b.qrcbn_code === window.editingQRCBN);
+    
+    if (index !== -1) {
+        books[index] = { ...books[index], ...updatedBook };
+        saveBooks(books);
+        
+        // Reset form ke mode normal
+        resetPublishForm();
+        
+        // Refresh tampilan
+        refreshDashboard();
+        refreshLibrary();
+        
+        alert('Book updated successfully!');
+        
+        // Kembali ke library
+        showPage('library');
+    } else {
+        alert('Book not found!');
+    }
+    
+    // Hapus temporary editing flag
+    delete window.editingQRCBN;
+}
+
+// ==================== RESET PUBLISH FORM ====================
+function resetPublishForm() {
+    document.getElementById('bookForm').reset();
+    document.getElementById('price').value = '85000';
+    
+    const submitBtn = document.querySelector('#bookForm button[type="submit"]');
+    submitBtn.innerHTML = '<i class="fas fa-qrcode"></i> Register & Generate QR';
+    submitBtn.style.background = 'linear-gradient(135deg, #0f5c3f, #1a8f5f)';
+    
+    // Reset form onsubmit
+    document.getElementById('bookForm').onsubmit = saveBook;
+    
+    // Reset global save function
+    window.saveBook = saveBook;
+    
+    delete window.editingQRCBN;
+}
         
         function updateProfile(event) {
             event.preventDefault();
@@ -1292,6 +1414,7 @@
         });
         
         window.showPage = showPage;
+		window.editBook = editBook;
         window.saveBook = saveBook;
         window.updateProfile = updateProfile;
         window.deleteBook = deleteBook;
