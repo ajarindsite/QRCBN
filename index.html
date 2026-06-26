@@ -1325,7 +1325,8 @@ function resetPublishForm() {
         
         // ==================== QR ====================
         function viewQR(qrcbnCode) {
-            const scanUrl = `scan.html?code=${qrcbnCode}`;
+            const baseUrl = 'https://qrcbn.ajarind890.workers..dev';
+			const scanUrl = `scan.html?code=${qrcbnCode}`;
             const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(scanUrl)}&bgcolor=ffffff`;
             
             document.getElementById('qrPreview').innerHTML = `<img src="${qrApiUrl}" alt="QR Code" style="width: 180px; height: 180px;">`;
